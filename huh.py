@@ -1,7 +1,7 @@
 import random
 random.seed()
 
-games = 1000000
+games = 10
 door_cnt = 3
 
 wins_stay = 0
@@ -9,7 +9,7 @@ wins_switch = 0
 count_switch = 0
 count_stay = 0
 loss = 0
-doors = range(1, door_cnt)
+doors = range(1, door_cnt+1)
 
 def show(msg):
     if games <= 100:
@@ -22,15 +22,19 @@ while i < games:
     guess = random.randint(1, door_cnt)
     switch = random.randint(0, 1) == 1
     # remove a door that isn't a winner and isn't the guess
-    show_door = list(set(doors) - set([guess]))
-    show("Prize: %d  Guess: %d  Show door: %d  Switch: %d" % (prize, guess, show_door[0], switch))
+    show_door = list(set(doors) - set([guess]) - set([prize]))[0]
+    #print doors
+    #print guess
+    #print prize
+    #print show_door
+    show("Prize: %d  Guess: %d  Show door: %d  Switch: %d" % (prize, guess, show_door, switch))
     # should we switch our guess
     if switch:
         count_switch += 1
-        guess = show_door[0]
+        guess = list(set(doors) - set([guess]) - set([show_door]))[0]
         if prize == guess:
             wins_switch += 1
-            show("Switched and won")
+            show("Switched to %d and won" % (guess))
         else:
             loss += 1
             show("Switched to %d but prize was behind %d" % (guess, prize))
@@ -43,7 +47,8 @@ while i < games:
             loss += 1
             show("Stayed with %d but prize was behind %d" % (guess, prize))
 
-print "Games: %d  Loss: %d" % ( games, loss )
+loss_pct = loss / float(games) * 100;
+print "Games: %d  Loss: %d  Loss Pct: %0.2f" % ( games, loss, loss_pct )
 if count_switch == 0:
     pct_switch = 0
 else:
